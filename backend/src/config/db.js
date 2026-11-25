@@ -4,7 +4,14 @@ const mongoose = require('mongoose');
 let isConnected = false;
 
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI;
+  const uri = process.env.MONGODB_URI?.trim();
+  console.log(
+  '[MongoDB] Connection string format:',
+  uri?.startsWith('mongodb+srv://') ||
+  uri?.startsWith('mongodb://')
+    ? 'VALID'
+    : 'INVALID'
+);
 
   if (!uri) {
     console.error('[MongoDB] MONGODB_URI is missing!');
