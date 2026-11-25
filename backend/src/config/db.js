@@ -1,20 +1,34 @@
+
 const mongoose = require('mongoose');
 
 let isConnected = false;
 
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/thematic_copy_trading';
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    console.error('[MongoDB] MONGODB_URI is missing!');
+    return;
+  }
+
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2500, // Quick fail if local mongo is offline
+      serverSelectionTimeoutMS: 10000,
     });
+
     isConnected = true;
-    console.log(`[MongoDB] Connected successfully to host: ${conn.connection.host}`);
+
+    console.log(
+      '[MongoDB] Connected successfully to host:',
+      conn.connection.host
+    );
   } catch (error) {
     isConnected = false;
-    console.warn(`[MongoDB Warning] Could not connect to MongoDB at ${uri}.`);
-    console.warn(`[MongoDB Warning] Operating in Hybrid Memory-Store Mode. All API routes will function normally for development & testing!`);
-    console.warn(`[MongoDB Tip] To connect to a live MongoDB instance, start mongod locally or set MONGODB_URI in backend/.env`);
+
+    console.error('[MongoDB Error Name]:', error.name);
+    console.error('[MongoDB Error Message]:', error.message);
+
+    console.warn('[MongoDB] Running in fallback mode.');
   }
 };
 
